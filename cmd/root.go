@@ -24,18 +24,18 @@ import (
 	"fmt"
 	"os"
 
-	homedir "github.com/mitchellh/go-homedir"
+	"github.com/himetani/configctl/workspace"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var cfgFile string
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "configctl",
-	Short: "configctl is command modify remote configuration file and track the history of operation",
-	Long:  `configctl is command modify remote configuration file and track the history of operation`,
+	Use:               "configctl",
+	Short:             "configctl is command modify remote configuration file and track the history of operation",
+	Long:              `configctl is command modify remote configuration file and track the history of operation`,
+	PersistentPreRunE: initWorkspace,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -47,41 +47,21 @@ func Execute() {
 	}
 }
 
-func init() {
-	cobra.OnInitialize(initConfig)
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.configctl.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+// Silent is function not to show usage and error messages
+func Silent(cmd *cobra.Command) {
+	cmd.SilenceUsage = true
+	cmd.SilenceErrors = true
 }
 
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-		// Search config in home directory with name ".configctl" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".configctl")
+func initWorkspace(cmd *cobra.Command, args []string) error {
+	if cmd.Use == "version" {
+		return nil
 	}
 
-	viper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	if err := workspace.Init(""); err != nil {
+		Silent(cmd)
+		return err
 	}
+
+	return nil
 }
