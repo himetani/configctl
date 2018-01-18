@@ -21,31 +21,55 @@
 package cmd
 
 import (
-	"fmt"
+	"errors"
 
+	"github.com/himetani/configctl/cfg"
+	"github.com/himetani/configctl/workspace"
 	"github.com/spf13/cobra"
+)
+
+var (
+	hostname string
+	abs      string
+	username string
 )
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
-	Use:   "add",
+	Use:   "add [name]",
 	Short: "Add new configuration operation",
 	Long:  `Add new configuration operation`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("add called")
-	},
 }
 
 func init() {
+	addCmd.RunE = add
+	addCmd.Flags().StringVar(&hostname, "hostname", "", "hostname")
+	addCmd.Flags().StringVar(&abs, "abs", "", "absolutely path")
+	addCmd.Flags().StringVar(&username, "username", "", "username")
 	RootCmd.AddCommand(addCmd)
+}
 
-	// Here you will define your flags and configuration settings.
+func add(cmd *cobra.Command, args []string) error {
+	if len(args) != 1 {
+		return errors.New("Arguments are invalid")
+	}
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// addCmd.PersistentFlags().String("foo", "", "A help for foo")
+	silent(cmd)
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// addCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	name := args[0]
+
+	cfg := &cfg.Cfg{
+		Name:     name,
+		Hostname: hostname,
+		Abs:      abs,
+		Username: username,
+	}
+
+	/*
+		if err := workspace.CreateConfig(name); err != nil {
+			return err
+		}
+	*/
+
+	return workspace.CreateConfig(cfg)
 }

@@ -47,8 +47,7 @@ func Execute() {
 	}
 }
 
-// Silent is function not to show usage and error messages
-func Silent(cmd *cobra.Command) {
+func silent(cmd *cobra.Command) {
 	cmd.SilenceUsage = true
 	cmd.SilenceErrors = true
 }
@@ -59,7 +58,7 @@ func initWorkspace(cmd *cobra.Command, args []string) error {
 	}
 
 	if err := workspace.Init(""); err != nil {
-		Silent(cmd)
+		silent(cmd)
 		return err
 	}
 
