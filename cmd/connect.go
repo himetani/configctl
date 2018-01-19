@@ -22,61 +22,50 @@ package cmd
 
 import (
 	"errors"
-	"os"
-	"path/filepath"
+	"fmt"
 
+	"github.com/himetani/configctl/client"
 	"github.com/himetani/configctl/workspace"
 	"github.com/spf13/cobra"
 )
 
-var (
-	hostname   string
-	port       string
-	abs        string
-	username   string
-	privateKey string
-)
-
-// addCmd represents the add command
-var addCmd = &cobra.Command{
-	Use:   "add [name]",
-	Short: "Add new configuration operation",
-	Long:  `Add new configuration operation`,
+// connectCmd represents the connect command
+var connectCmd = &cobra.Command{
+	Use:   "connect",
+	Short: "connect to target configurations",
+	Long:  `connect to target configurations`,
 }
 
 func init() {
-	addCmd.RunE = add
-	addCmd.Flags().StringVar(&hostname, "hostname", "", "hostname")
-	addCmd.Flags().StringVar(&port, "port", "2222", "port number")
-	addCmd.Flags().StringVar(&abs, "abs", "", "absolutely path")
-	addCmd.Flags().StringVar(&username, "username", "", "username")
-	addCmd.Flags().StringVar(&privateKey, "private-key", filepath.Clean(os.Getenv("CONFIGCTL_TEST_PRIVATE_KEY")), "ssh private key path")
-	RootCmd.AddCommand(addCmd)
+	connectCmd.RunE = connect
+	RootCmd.AddCommand(connectCmd)
 }
 
-func add(cmd *cobra.Command, args []string) error {
+func connect(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
 		return errors.New("Arguments are invalid")
 	}
 
 	silent(cmd)
-
 	name := args[0]
 
-	cfg := &workspace.Cfg{
-		Name:       name,
-		Hostname:   hostname,
-		Port:       port,
-		Abs:        abs,
-		Username:   username,
-		PrivateKey: privateKey,
+	var cfg workspace.Cfg
+	if err := workspace.GetConfig(name, &cfg); err != nil {
+		return err
 	}
 
-	/*
-		if err := workspace.CreateConfig(name); err != nil {
-			return err
-		}
-	*/
+	session, err := client.NewSession(cfg.Hostname, cfg.Port, cfg.Username, cfg.PrivateKey)
+	if err != nil {
+		return err
+	}
+	defer session.Close()
 
-	return workspace.CreateConfig(cfg)
+	bytes, err := session.Run(fmt.Sprintf("cat %s\n", cfg.Abs))
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(string(bytes))
+
+	return nil
 }

@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/himetani/configctl/cfg"
 	homedir "github.com/mitchellh/go-homedir"
 )
 
@@ -42,7 +41,7 @@ func Init(path string) error {
 }
 
 // CreateConfig create new config
-func CreateConfig(cfg *cfg.Cfg) error {
+func CreateConfig(cfg *Cfg) error {
 	configs := getConfigs()
 
 	for _, c := range configs {
@@ -56,14 +55,18 @@ func CreateConfig(cfg *cfg.Cfg) error {
 		return err
 	}
 
-	file, err := os.Create(filepath.Join(cfgPath, cfg.Name+".json"))
+	file, err := os.Create(filepath.Join(cfgPath, "config.json"))
 	if err != nil {
 		return err
 	}
 
 	encoder := json.NewEncoder(file)
+	if err = encoder.Encode(cfg); err != nil {
+		return nil
+	}
 
-	return encoder.Encode(cfg)
+	fmt.Printf("[INFO] %s is added. Confituration path is %s\n", cfg.Name, cfgPath)
+	return nil
 }
 
 func getConfigs() (configs []string) {
@@ -73,4 +76,16 @@ func getConfigs() (configs []string) {
 	}
 
 	return configs
+}
+
+// GetConfig returns configuration of operation
+func GetConfig(name string, out interface{}) error {
+	file, err := os.Open(filepath.Join(configCtlHome, "configs", name, "config.json"))
+	if err != nil {
+		return err
+	}
+
+	decoder := json.NewDecoder(file)
+
+	return decoder.Decode(out)
 }
