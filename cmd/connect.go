@@ -65,7 +65,7 @@ func connect(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	fmt.Println(string(bytes))
+	fmt.Printf(string(bytes))
 
 	return nil
 }

@@ -13,15 +13,17 @@ import (
 var configCtlHome string
 
 // Init is function initialize workspace
-func Init(path string) error {
-	if path == "" {
+func Init() error {
+	configCtlHome = os.Getenv("CONFIGCTL_HOME")
+
+	if configCtlHome == "" {
 		home, err := homedir.Dir()
 		if err != nil {
 			return err
 		}
 		configCtlHome = filepath.Join(home, ".configctl")
 	} else {
-		configCtlHome = path
+		configCtlHome = filepath.Clean(configCtlHome)
 	}
 
 	if _, err := os.Stat(configCtlHome); os.IsNotExist(err) {

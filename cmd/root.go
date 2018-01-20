@@ -57,7 +57,7 @@ func initWorkspace(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	if err := workspace.Init(""); err != nil {
+	if err := workspace.Init(); err != nil {
 		silent(cmd)
 		return err
 	}
