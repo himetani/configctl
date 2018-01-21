@@ -1,6 +1,7 @@
 package workspace
 
 import (
+	"errors"
 	"log"
 	"os"
 	"path/filepath"
@@ -8,14 +9,17 @@ import (
 )
 
 func TestInit(t *testing.T) {
-	setup()
-	defer teardown()
+	if err := setup(); err != nil {
+		t.Fatal(err)
+	}
 
 	configCtlHome := os.Getenv("CONFIGCTL_HOME")
 
 	if err := Init(); err != nil {
 		t.Errorf("Unexpected error happend: %s\n", err)
 	}
+
+	defer teardown()
 
 	if _, err := os.Stat(configCtlHome); os.IsNotExist(err) {
 		t.Errorf("$CONFIGCTL_HOME dir is not created. %s\n", err)
@@ -26,9 +30,13 @@ func TestInit(t *testing.T) {
 	}
 }
 
-func setup() {
+func setup() error {
 	testHome := os.Getenv("TEST_CONFIGCTL_HOME")
+	if testHome == "" {
+		return errors.New("Set TEST_CONFIGCTL_HOME environment variable to test")
+	}
 	os.Setenv("CONFIGCTL_HOME", testHome)
+	return nil
 }
 
 func teardown() {
