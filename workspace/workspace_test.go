@@ -50,26 +50,23 @@ func TestInit(t *testing.T) {
 func TestGetConfigs(t *testing.T) {
 	configCtlHome = filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "himetani", "configctl", "workspace", "testdata")
 
-	/*
-		t.Run("getConfigs", func(t *testing.T) {
-			os.Setenv("CONFIGCTL_HOME", filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "himetani", "configctl", "workspace", "testdata"))
-			type data struct {
-				TestName string
-				Result   []string
-			}
+	t.Run("GetConfigs", func(t *testing.T) {
+		type data struct {
+			TestName string
+			Result   []string
+		}
 
-			tests := []data{
-				{"Success", []string{"hoge"}},
-			}
+		tests := []data{
+			{"Success", []string{"valid"}},
+		}
 
-			for i, test := range tests {
-				result := getConfigs()
-				if !reflect.DeepEqual(result, test.Result) {
-					t.Errorf("Test #%d %s: expected '%s', got '%s'", i, test.TestName, test.Result, result)
-				}
+		for i, test := range tests {
+			result := GetConfigs()
+			if !reflect.DeepEqual(result, test.Result) {
+				t.Errorf("Test #%d %s: expected '%s', got '%s'", i, test.TestName, test.Result, result)
 			}
-		})
-	*/
+		}
+	})
 
 	t.Run("GetConfig", func(t *testing.T) {
 		type data struct {

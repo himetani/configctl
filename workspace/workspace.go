@@ -57,6 +57,10 @@ func CreateConfig(cfg *Cfg) error {
 		return err
 	}
 
+	if err := os.Mkdir(filepath.Join(cfgPath, "history"), 0777); err != nil {
+		return err
+	}
+
 	file, err := os.Create(filepath.Join(cfgPath, "config.json"))
 	if err != nil {
 		return err
@@ -71,6 +75,7 @@ func CreateConfig(cfg *Cfg) error {
 	return nil
 }
 
+// GetConfigs returns the slice of config
 func GetConfigs() (configs []string) {
 	configPaths, _ := ioutil.ReadDir(filepath.Join(configCtlHome, "configs"))
 	for _, c := range configPaths {

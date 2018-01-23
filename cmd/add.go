@@ -24,6 +24,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/himetani/configctl/workspace"
 	"github.com/spf13/cobra"
@@ -64,12 +65,14 @@ func add(cmd *cobra.Command, args []string) error {
 	name := args[0]
 
 	cfg := &workspace.Cfg{
-		Name:       name,
-		Hostname:   hostname,
-		Port:       port,
-		Abs:        abs,
-		Username:   username,
-		PrivateKey: privateKey,
+		Name:        name,
+		Hostname:    hostname,
+		Port:        port,
+		Abs:         abs,
+		Username:    username,
+		PrivateKey:  privateKey,
+		LastUpdated: time.Now(),
+		LatestIdx:   0,
 	}
 
 	/*
