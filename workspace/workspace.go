@@ -44,7 +44,7 @@ func Init() error {
 
 // CreateConfig create new config
 func CreateConfig(cfg *Cfg) error {
-	configs := getConfigs()
+	configs := GetConfigs()
 
 	for _, c := range configs {
 		if c == cfg.Name {
@@ -71,7 +71,7 @@ func CreateConfig(cfg *Cfg) error {
 	return nil
 }
 
-func getConfigs() (configs []string) {
+func GetConfigs() (configs []string) {
 	configPaths, _ := ioutil.ReadDir(filepath.Join(configCtlHome, "configs"))
 	for _, c := range configPaths {
 		configs = append(configs, filepath.Base(c.Name()))
