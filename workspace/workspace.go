@@ -128,5 +128,8 @@ func PutTmp(config, name string, reader io.Reader) error {
 // TmpDiff execute vimdiff of files in tmp dir
 func TmpDiff(name, before, after string) error {
 	tmpPath := filepath.Join(configCtlHome, "configs", name, "tmp")
-	return exec.Command("vimdiff", filepath.Join(tmpPath, before), filepath.Join(tmpPath, after)).Run()
+	cmd := exec.Command("vimdiff", filepath.Join(tmpPath, before), filepath.Join(tmpPath, after))
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	return cmd.Run()
 }

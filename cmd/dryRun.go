@@ -89,7 +89,5 @@ func dryRun(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return nil
-
-	//return workspace.TmpDiff(name, "before", "after")
+	return workspace.TmpDiff(name, "before", "after")
 }
