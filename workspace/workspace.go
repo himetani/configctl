@@ -3,8 +3,10 @@ package workspace
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -95,4 +97,36 @@ func GetConfig(name string, out interface{}) error {
 	decoder := json.NewDecoder(file)
 
 	return decoder.Decode(out)
+}
+
+// CreateTmp creates tmp dir and returns error
+func CreateTmp(name string) error {
+	tmpPath := filepath.Join(configCtlHome, "configs", name, "tmp")
+	return os.Mkdir(tmpPath, 0777)
+}
+
+// DeleteTmp delete tmp dir and returns error
+func DeleteTmp(name string) error {
+	tmpPath := filepath.Join(configCtlHome, "configs", name, "tmp")
+	return os.RemoveAll(tmpPath)
+}
+
+// PutTmp creates file in tmp dir and returns error
+func PutTmp(config, name string, reader io.Reader) error {
+	tmpPath := filepath.Join(configCtlHome, "configs", config, "tmp")
+	file, err := os.Create(filepath.Join(tmpPath, name))
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = io.Copy(file, reader)
+
+	return err
+}
+
+// TmpDiff execute vimdiff of files in tmp dir
+func TmpDiff(name, before, after string) error {
+	tmpPath := filepath.Join(configCtlHome, "configs", name, "tmp")
+	return exec.Command("vimdiff", filepath.Join(tmpPath, before), filepath.Join(tmpPath, after)).Run()
 }

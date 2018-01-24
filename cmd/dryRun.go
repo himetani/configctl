@@ -21,27 +21,29 @@
 package cmd
 
 import (
+	"bytes"
 	"errors"
-	"fmt"
+	"os"
 
+	"github.com/himetani/configctl/client"
 	"github.com/himetani/configctl/workspace"
 	"github.com/spf13/cobra"
 )
 
-// showCmd represents the show command
-var showCmd = &cobra.Command{
-	Use:   "show",
-	Short: "Show the configuration information",
-	Long:  `Show the configuration information`,
+// dryRunCmd represents the dryRun command
+var dryRunCmd = &cobra.Command{
+	Use:   "dryRun [config] [file]",
+	Short: "Dry run shows the diff between current config file at server & applied config file",
+	Long:  `Dry run shows the diff between current config file at server & applied config file`,
 }
 
 func init() {
-	showCmd.RunE = show
-	RootCmd.AddCommand(showCmd)
+	dryRunCmd.RunE = dryRun
+	RootCmd.AddCommand(dryRunCmd)
 }
 
-func show(cmd *cobra.Command, args []string) error {
-	if len(args) != 1 {
+func dryRun(cmd *cobra.Command, args []string) error {
+	if len(args) != 2 {
 		return errors.New("Arguments are invalid")
 	}
 
@@ -53,14 +55,41 @@ func show(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	fmt.Printf("  Name         \t: %s\n", cfg.Name)
-	fmt.Printf("  Hostname     \t: %s\n", cfg.Hostname)
-	fmt.Printf("  Port         \t: %s\n", cfg.Port)
-	fmt.Printf("  AbsolutePath \t: %s\n", cfg.Abs)
-	fmt.Printf("  Username     \t: %s\n", cfg.Username)
-	fmt.Printf("  PrivateKey   \t: %s\n", cfg.PrivateKey)
-	fmt.Printf("  LastUpdated  \t: %s\n", cfg.LastUpdated)
-	fmt.Printf("  LatestIdx    \t: %d\n", cfg.LatestIdx)
+	session, err := client.NewSession(cfg.Hostname, cfg.Port, cfg.Username, cfg.PrivateKey)
+	if err != nil {
+		return err
+	}
+	defer session.Close()
+
+	data, err := session.Get(cfg.Abs)
+	if err != nil {
+		return err
+	}
+
+	bytes.NewBuffer(data)
+	before := bytes.NewBuffer(data)
+
+	after, err := os.Open(args[1])
+	if err != nil {
+		return err
+	}
+	defer after.Close()
+
+	if err := workspace.CreateTmp(name); err != nil {
+		return err
+	}
+
+	defer workspace.DeleteTmp(name)
+
+	if err := workspace.PutTmp(name, "before", before); err != nil {
+		return err
+	}
+
+	if err := workspace.PutTmp(name, "after", after); err != nil {
+		return err
+	}
 
 	return nil
+
+	//return workspace.TmpDiff(name, "before", "after")
 }

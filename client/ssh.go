@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"io/ioutil"
 
 	"golang.org/x/crypto/ssh"
@@ -61,7 +62,8 @@ func (s *Session) Close() {
 	}
 }
 
-// Run executes the command
-func (s *Session) Run(cmd string) ([]byte, error) {
+// Get executes the command
+func (s *Session) Get(abs string) ([]byte, error) {
+	cmd := fmt.Sprintf("cat %s\n", abs)
 	return s.session.Output(cmd)
 }

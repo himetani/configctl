@@ -24,24 +24,23 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/himetani/configctl/client"
 	"github.com/himetani/configctl/workspace"
 	"github.com/spf13/cobra"
 )
 
-// connectCmd represents the connect command
-var connectCmd = &cobra.Command{
-	Use:   "connect",
-	Short: "connect to target configurations",
-	Long:  `connect to target configurations`,
+// describeCmd represents the describe command
+var describeCmd = &cobra.Command{
+	Use:   "describe",
+	Short: "describe the configuration information",
+	Long:  `describe the configuration information`,
 }
 
 func init() {
-	connectCmd.RunE = connect
-	RootCmd.AddCommand(connectCmd)
+	describeCmd.RunE = describe
+	RootCmd.AddCommand(describeCmd)
 }
 
-func connect(cmd *cobra.Command, args []string) error {
+func describe(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
 		return errors.New("Arguments are invalid")
 	}
@@ -54,18 +53,14 @@ func connect(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	session, err := client.NewSession(cfg.Hostname, cfg.Port, cfg.Username, cfg.PrivateKey)
-	if err != nil {
-		return err
-	}
-	defer session.Close()
-
-	bytes, err := session.Get(cfg.Abs)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf(string(bytes))
+	fmt.Printf("  Name         \t: %s\n", cfg.Name)
+	fmt.Printf("  Hostname     \t: %s\n", cfg.Hostname)
+	fmt.Printf("  Port         \t: %s\n", cfg.Port)
+	fmt.Printf("  AbsolutePath \t: %s\n", cfg.Abs)
+	fmt.Printf("  Username     \t: %s\n", cfg.Username)
+	fmt.Printf("  PrivateKey   \t: %s\n", cfg.PrivateKey)
+	fmt.Printf("  LastUpdated  \t: %s\n", cfg.LastUpdated)
+	fmt.Printf("  LatestIdx    \t: %d\n", cfg.LatestIdx)
 
 	return nil
 }
