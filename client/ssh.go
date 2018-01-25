@@ -2,16 +2,19 @@ package client
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
+	"path/filepath"
 
 	"golang.org/x/crypto/ssh"
 )
 
 // Session is struct representing ssh Session
 type Session struct {
-	config  *ssh.ClientConfig
-	conn    *ssh.Client
-	session *ssh.Session
+	config    *ssh.ClientConfig
+	conn      *ssh.Client
+	session   *ssh.Session
+	StdinPipe io.WriteCloser
 }
 
 // NewSession returns new Session instance
@@ -62,8 +65,28 @@ func (s *Session) Close() {
 	}
 }
 
-// Get executes the command
+// Get is func that get file contents
 func (s *Session) Get(abs string) ([]byte, error) {
 	cmd := fmt.Sprintf("cat %s\n", abs)
 	return s.session.Output(cmd)
+}
+
+// Scp is func copy file to abs
+func (s *Session) Scp(content, abs string) error {
+	w, err := s.session.StdinPipe()
+	if err != nil {
+		return err
+	}
+
+	filename := filepath.Base(abs)
+	dir := filepath.Dir(abs)
+
+	go func() {
+		defer w.Close()
+		fmt.Fprintln(w, "C0644", len(content), filename)
+		fmt.Fprint(w, content)
+		fmt.Fprint(w, "\x00")
+	}()
+
+	return s.session.Run(fmt.Sprintf("/usr/bin/scp -tr %s", dir))
 }
