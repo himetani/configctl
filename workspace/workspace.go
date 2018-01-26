@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 
 	homedir "github.com/mitchellh/go-homedir"
 )
@@ -77,6 +78,18 @@ func CreateConfig(cfg *Cfg) error {
 	return nil
 }
 
+// UpdateConfig is func to update config.json
+func UpdateConfig(cfg *Cfg) error {
+	cfgPath := filepath.Join(configCtlHome, "configs", cfg.Name)
+	file, err := os.Create(filepath.Join(cfgPath, "config.json"))
+	if err != nil {
+		return err
+	}
+
+	encoder := json.NewEncoder(file)
+	return encoder.Encode(cfg)
+}
+
 // GetConfigs returns the slice of config
 func GetConfigs() (configs []string) {
 	configPaths, _ := ioutil.ReadDir(filepath.Join(configCtlHome, "configs"))
@@ -132,4 +145,35 @@ func TmpDiff(name, before, after string) error {
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	return cmd.Run()
+}
+
+// CreateHistory is func to create hisotry
+func CreateHistory(name string, idx int, before, after io.Reader) error {
+	histPath := filepath.Join(configCtlHome, "configs", name, "history", strconv.Itoa(idx))
+	if err := os.Mkdir(histPath, 0777); err != nil {
+		return err
+	}
+
+	beforef, err := os.Create(filepath.Join(histPath, "before"))
+	if err != nil {
+		return err
+	}
+	defer beforef.Close()
+
+	afterf, err := os.Create(filepath.Join(histPath, "after"))
+	if err != nil {
+		return err
+	}
+	defer afterf.Close()
+
+	_, err = io.Copy(beforef, before)
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(afterf, after)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

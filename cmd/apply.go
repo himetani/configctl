@@ -21,6 +21,7 @@
 package cmd
 
 import (
+	"bytes"
 	"errors"
 	"io/ioutil"
 	"os"
@@ -55,21 +56,49 @@ func apply(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	session, err := client.NewSession(cfg.Hostname, cfg.Port, cfg.Username, cfg.PrivateKey)
-	if err != nil {
-		return err
-	}
-	defer session.Close()
-
 	file, err := os.Open(args[1])
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	bytes, _ := ioutil.ReadAll(file)
-	content := string(bytes)
+	applied, _ := ioutil.ReadAll(file)
+	content := string(applied)
 
-	return session.Scp(content, cfg.Abs)
+	if err := history(cfg, name, applied); err != nil {
+		return err
+	}
 
+	session, err := client.NewSession(cfg.Hostname, cfg.Port, cfg.Username, cfg.PrivateKey)
+	if err != nil {
+		return err
+	}
+	defer session.Close()
+
+	if err := session.Scp(content, cfg.Abs); err != nil {
+		return err
+	}
+
+	cfg.LatestIdx++
+	return workspace.UpdateConfig(&cfg)
+
+}
+
+func history(cfg workspace.Cfg, name string, applied []byte) error {
+	session, err := client.NewSession(cfg.Hostname, cfg.Port, cfg.Username, cfg.PrivateKey)
+	if err != nil {
+		return err
+	}
+	defer session.Close()
+
+	// Get Current File
+	current, err := session.Get(cfg.Abs)
+	if err != nil {
+		return err
+	}
+
+	before := bytes.NewBuffer(current)
+	after := bytes.NewBuffer(applied)
+
+	return workspace.CreateHistory(name, cfg.LatestIdx, before, after)
 }
