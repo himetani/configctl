@@ -1,6 +1,7 @@
 package workspace
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"log"
@@ -48,7 +49,7 @@ func TestInit(t *testing.T) {
 }
 
 func TestGetConfigs(t *testing.T) {
-	configCtlHome = filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "himetani", "configctl", "workspace", "testdata")
+	configCtlHome = filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "himetani", "configctl", "workspace", "testdata", "getConfigs")
 
 	t.Run("GetConfigs", func(t *testing.T) {
 		type data struct {
@@ -116,4 +117,51 @@ func TestGetConfigs(t *testing.T) {
 		}
 
 	})
+}
+
+func TestCreateHistory(t *testing.T) {
+	configCtlHome = filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "himetani", "configctl", "workspace", "testdata", "createHistory")
+	cfgName := "valid"
+	type data struct {
+		TestName string
+		Idx      int
+		Result   error
+	}
+	tests := []data{
+		{"Success", 1, nil},
+		{"Conflict dir", 0, fmt.Errorf("mkdir /Users/takafumi.tsukamoto/dev/src/github.com/himetani/configctl/workspace/testdata/createHistory/configs/valid/history/0: file exists")},
+	}
+
+	func() {
+		os.MkdirAll(filepath.Join(configCtlHome, "configs", cfgName, "history", "0"), 0777)
+	}()
+
+	for i, test := range tests {
+		before := bytes.NewBufferString("")
+		after := bytes.NewBufferString("")
+		err := CreateHistory("valid", test.Idx, before, after)
+
+		if err == nil && test.Result != nil {
+			t.Errorf("Test #%d %s : Unexpected error happend. err expected non-nil, but got nil", i, test.TestName)
+			continue
+		}
+
+		if err != nil && test.Result == nil {
+			t.Errorf("Test #%d %s : Unexpected error happend: %s\n", i, test.TestName, err)
+			continue
+		}
+
+		if err == test.Result {
+			continue
+		}
+
+		if err.Error() != test.Result.Error() {
+			t.Errorf("Test #%d %s : expected '%s', got '%s'", i, test.TestName, test.Result, err)
+		}
+	}
+
+	func() {
+		os.RemoveAll(filepath.Join(configCtlHome, "configs", cfgName, "history"))
+	}()
+
 }
