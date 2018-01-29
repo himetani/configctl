@@ -65,7 +65,7 @@ func apply(cmd *cobra.Command, args []string) error {
 	applied, _ := ioutil.ReadAll(file)
 	content := string(applied)
 
-	if err := history(cfg, name, applied); err != nil {
+	if err := createHistory(cfg, name, applied); err != nil {
 		return err
 	}
 
@@ -84,7 +84,7 @@ func apply(cmd *cobra.Command, args []string) error {
 
 }
 
-func history(cfg workspace.Cfg, name string, applied []byte) error {
+func createHistory(cfg workspace.Cfg, name string, applied []byte) error {
 	session, err := client.NewSession(cfg.Hostname, cfg.Port, cfg.Username, cfg.PrivateKey)
 	if err != nil {
 		return err

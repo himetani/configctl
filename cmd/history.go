@@ -21,28 +21,33 @@
 package cmd
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/himetani/configctl/workspace"
 	"github.com/spf13/cobra"
 )
 
-// listCmd represents the list command
-var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "Show the list of configurations",
-	Long:  `Show the list of configurations`,
+// hisoryCmd represents the hisory command
+var historyCmd = &cobra.Command{
+	Use:   "history",
+	Short: "Show history of apply execution",
+	Long:  `Show history of apply execution`,
 }
 
 func init() {
-	listCmd.RunE = list
-	RootCmd.AddCommand(listCmd)
+	historyCmd.RunE = history
+	RootCmd.AddCommand(historyCmd)
+
 }
 
-func list(*cobra.Command, []string) error {
-	for _, c := range workspace.GetConfigs() {
-		fmt.Println(c)
+func history(cmd *cobra.Command, args []string) error {
+	if len(args) != 2 {
+		return errors.New("Arguments are invalid")
 	}
 
-	return nil
+	silent(cmd)
+	name := args[0]
+	idx := args[1]
+
+	return workspace.ShowHistory(name, idx)
 }
