@@ -27,20 +27,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// hisoryCmd represents the hisory command
-var historyCmd = &cobra.Command{
-	Use:   "history",
+// applyHisoryCmd represents the applyHisory command
+var applyHistoryCmd = &cobra.Command{
+	Use:   "applyHistory",
 	Short: "Show history of apply execution",
 	Long:  `Show history of apply execution`,
 }
 
 func init() {
-	historyCmd.RunE = history
-	RootCmd.AddCommand(historyCmd)
+	applyHistoryCmd.RunE = applyHistory
+	RootCmd.AddCommand(applyHistoryCmd)
 
 }
 
-func history(cmd *cobra.Command, args []string) error {
+func applyHistory(cmd *cobra.Command, args []string) error {
 	if len(args) != 2 {
 		return errors.New("Arguments are invalid")
 	}
