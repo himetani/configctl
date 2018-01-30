@@ -104,7 +104,7 @@ func GetConfigs() (configs []string) {
 func GetConfig(name string, out interface{}) error {
 	file, err := os.Open(filepath.Join(configCtlHome, "configs", name, "config.json"))
 	if err != nil {
-		return err
+		return fmt.Errorf("Can't find \"%s\" job. error: %s", name, err)
 	}
 
 	decoder := json.NewDecoder(file)
@@ -180,9 +180,14 @@ func CreateHistory(name string, idx int, before, after io.Reader) error {
 
 // ShowHistory is func to open job execution history
 func ShowHistory(name, idx string) error {
-	histPath := filepath.Join(configCtlHome, "configs", name, "history", idx)
+	cfgPath := filepath.Join(configCtlHome, "configs", name)
+	if _, err := os.Stat(cfgPath); err != nil {
+		return fmt.Errorf("Can't find \"%s\" job. error: %s", name, err)
+	}
+
+	histPath := filepath.Join(cfgPath, "history", idx)
 	if _, err := os.Stat(histPath); err != nil {
-		return fmt.Errorf("Can't find %s job history. idx: %s, error: %s", name, idx, err)
+		return fmt.Errorf("Can't find \"%s\" job history. idx: %s, error: %s", name, idx, err)
 	}
 
 	cmd := exec.Command("vimdiff", filepath.Join(histPath, "before"), filepath.Join(histPath, "after"))
