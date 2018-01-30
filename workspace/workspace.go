@@ -70,6 +70,7 @@ func CreateConfig(cfg *Cfg) error {
 	}
 
 	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "\t")
 	if err = encoder.Encode(cfg); err != nil {
 		return nil
 	}
@@ -87,6 +88,7 @@ func UpdateConfig(cfg *Cfg) error {
 	}
 
 	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "\t")
 	return encoder.Encode(cfg)
 }
 
@@ -110,6 +112,15 @@ func GetConfig(name string, out interface{}) error {
 	decoder := json.NewDecoder(file)
 
 	return decoder.Decode(out)
+}
+
+// EditConfig opens vim to edit config.json of target job and returns error
+func EditConfig(name string) error {
+	cfgPath := filepath.Join(configCtlHome, "configs", name, "config.json")
+	cmd := exec.Command("vim", cfgPath)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	return cmd.Run()
 }
 
 // CreateTmp creates tmp dir and returns error
