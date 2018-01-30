@@ -181,6 +181,10 @@ func CreateHistory(name string, idx int, before, after io.Reader) error {
 // ShowHistory is func to open job execution history
 func ShowHistory(name, idx string) error {
 	histPath := filepath.Join(configCtlHome, "configs", name, "history", idx)
+	if _, err := os.Stat(histPath); err != nil {
+		return fmt.Errorf("Can't find %s job history. idx: %s, error: %s", name, idx, err)
+	}
+
 	cmd := exec.Command("vimdiff", filepath.Join(histPath, "before"), filepath.Join(histPath, "after"))
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
