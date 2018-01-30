@@ -30,8 +30,8 @@ import (
 // listCmd represents the list command
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "Show the list of configurations",
-	Long:  `Show the list of configurations`,
+	Short: "Show jobs list",
+	Long:  `Show jobs list`,
 }
 
 func init() {

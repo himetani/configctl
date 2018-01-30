@@ -29,9 +29,9 @@ import (
 
 // editCmd represents the edit command
 var editCmd = &cobra.Command{
-	Use:   "edit [name]",
-	Short: "Edit the configurations",
-	Long:  `Edit the configurations`,
+	Use:   "edit [jobName]",
+	Short: "Edit the job configurations",
+	Long:  `Edit the job configurations`,
 }
 
 func init() {

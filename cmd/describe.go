@@ -30,9 +30,9 @@ import (
 
 // describeCmd represents the describe command
 var describeCmd = &cobra.Command{
-	Use:   "describe",
-	Short: "describe the configuration information",
-	Long:  `describe the configuration information`,
+	Use:   "describe [jobName]",
+	Short: "describe the job configuration information",
+	Long:  `describe the job configuration information`,
 }
 
 func init() {

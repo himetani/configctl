@@ -33,7 +33,7 @@ import (
 
 // applyCmd represents the apply command
 var applyCmd = &cobra.Command{
-	Use:   "apply",
+	Use:   "apply [jobName] [file]",
 	Short: "Apply configurations",
 	Long:  `Apply configurations`,
 }

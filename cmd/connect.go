@@ -31,9 +31,9 @@ import (
 
 // connectCmd represents the connect command
 var connectCmd = &cobra.Command{
-	Use:   "connect",
-	Short: "connect to target configurations",
-	Long:  `connect to target configurations`,
+	Use:   "connect [jobName]",
+	Short: "connect to target job configuration server & confirm connectivity",
+	Long:  `connect to target job configuration server & confirm connectivity`,
 }
 
 func init() {

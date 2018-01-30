@@ -29,7 +29,7 @@ import (
 
 // applyHisoryCmd represents the applyHisory command
 var applyHistoryCmd = &cobra.Command{
-	Use:   "applyHistory",
+	Use:   "applyHistory [jobName] [idx]",
 	Short: "Show history of apply execution",
 	Long:  `Show history of apply execution`,
 }

@@ -40,7 +40,7 @@ var (
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
-	Use:   "add [name]",
+	Use:   "add [jobName]",
 	Short: "Add new configuration operation",
 	Long:  `Add new configuration operation`,
 }

@@ -32,7 +32,7 @@ import (
 
 // dryRunCmd represents the dryRun command
 var dryRunCmd = &cobra.Command{
-	Use:   "dryRun [config] [file]",
+	Use:   "dryRun [jobName] [file]",
 	Short: "Dry run shows the diff between current config file at server & applied config file",
 	Long:  `Dry run shows the diff between current config file at server & applied config file`,
 }
