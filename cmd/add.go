@@ -41,8 +41,8 @@ var (
 // addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:   "add [jobName]",
-	Short: "Add new configuration operation",
-	Long:  `Add new configuration operation`,
+	Short: "Add new job",
+	Long:  `Add new job`,
 }
 
 func init() {
@@ -64,7 +64,7 @@ func add(cmd *cobra.Command, args []string) error {
 
 	name := args[0]
 
-	cfg := &workspace.Cfg{
+	job := &workspace.Job{
 		Name:        name,
 		Hostname:    hostname,
 		Port:        port,
@@ -75,11 +75,5 @@ func add(cmd *cobra.Command, args []string) error {
 		LatestIdx:   0,
 	}
 
-	/*
-		if err := workspace.CreateConfig(name); err != nil {
-			return err
-		}
-	*/
-
-	return workspace.CreateConfig(cfg)
+	return workspace.CreateJob(job)
 }

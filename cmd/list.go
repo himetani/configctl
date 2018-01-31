@@ -40,8 +40,8 @@ func init() {
 }
 
 func list(*cobra.Command, []string) error {
-	for _, c := range workspace.GetConfigs() {
-		fmt.Println(c)
+	for _, j := range workspace.GetJobs() {
+		fmt.Println(j)
 	}
 
 	return nil

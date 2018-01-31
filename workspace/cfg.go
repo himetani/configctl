@@ -2,8 +2,8 @@ package workspace
 
 import "time"
 
-// Cfg is struct of operation configuration
-type Cfg struct {
+// Job is struct of operation configuration
+type Job struct {
 	Name        string    `json:"name"`
 	Hostname    string    `json:"hostname"`
 	Port        string    `json:"port"`

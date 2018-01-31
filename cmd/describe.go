@@ -48,19 +48,19 @@ func describe(cmd *cobra.Command, args []string) error {
 	silent(cmd)
 	name := args[0]
 
-	var cfg workspace.Cfg
-	if err := workspace.GetConfig(name, &cfg); err != nil {
+	var job workspace.Job
+	if err := workspace.GetJob(name, &job); err != nil {
 		return err
 	}
 
-	fmt.Printf("  Name         \t: %s\n", cfg.Name)
-	fmt.Printf("  Hostname     \t: %s\n", cfg.Hostname)
-	fmt.Printf("  Port         \t: %s\n", cfg.Port)
-	fmt.Printf("  AbsolutePath \t: %s\n", cfg.Abs)
-	fmt.Printf("  Username     \t: %s\n", cfg.Username)
-	fmt.Printf("  PrivateKey   \t: %s\n", cfg.PrivateKey)
-	fmt.Printf("  LastUpdated  \t: %s\n", cfg.LastUpdated)
-	fmt.Printf("  LatestIdx    \t: %d\n", cfg.LatestIdx)
+	fmt.Printf("  Name         \t: %s\n", job.Name)
+	fmt.Printf("  Hostname     \t: %s\n", job.Hostname)
+	fmt.Printf("  Port         \t: %s\n", job.Port)
+	fmt.Printf("  AbsolutePath \t: %s\n", job.Abs)
+	fmt.Printf("  Username     \t: %s\n", job.Username)
+	fmt.Printf("  PrivateKey   \t: %s\n", job.PrivateKey)
+	fmt.Printf("  LastUpdated  \t: %s\n", job.LastUpdated)
+	fmt.Printf("  LatestIdx    \t: %d\n", job.LatestIdx)
 
 	return nil
 }

@@ -47,5 +47,5 @@ func edit(cmd *cobra.Command, args []string) error {
 	silent(cmd)
 	name := args[0]
 
-	return workspace.EditConfig(name)
+	return workspace.EditJob(name)
 }

@@ -50,18 +50,18 @@ func dryRun(cmd *cobra.Command, args []string) error {
 	silent(cmd)
 	name := args[0]
 
-	var cfg workspace.Cfg
-	if err := workspace.GetConfig(name, &cfg); err != nil {
+	var job workspace.Job
+	if err := workspace.GetJob(name, &job); err != nil {
 		return err
 	}
 
-	session, err := client.NewSession(cfg.Hostname, cfg.Port, cfg.Username, cfg.PrivateKey)
+	session, err := client.NewSession(job.Hostname, job.Port, job.Username, job.PrivateKey)
 	if err != nil {
 		return err
 	}
 	defer session.Close()
 
-	data, err := session.Get(cfg.Abs)
+	data, err := session.Get(job.Abs)
 	if err != nil {
 		return err
 	}

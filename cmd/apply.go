@@ -34,8 +34,8 @@ import (
 // applyCmd represents the apply command
 var applyCmd = &cobra.Command{
 	Use:   "apply [jobName] [file]",
-	Short: "Apply configurations",
-	Long:  `Apply configurations`,
+	Short: "Apply new configurations",
+	Long:  `Apply new configurations`,
 }
 
 func init() {
@@ -51,8 +51,8 @@ func apply(cmd *cobra.Command, args []string) error {
 	silent(cmd)
 	name := args[0]
 
-	var cfg workspace.Cfg
-	if err := workspace.GetConfig(name, &cfg); err != nil {
+	var job workspace.Job
+	if err := workspace.GetJob(name, &job); err != nil {
 		return err
 	}
 
@@ -65,34 +65,34 @@ func apply(cmd *cobra.Command, args []string) error {
 	applied, _ := ioutil.ReadAll(file)
 	content := string(applied)
 
-	if err := createHistory(cfg, name, applied); err != nil {
+	if err := createHistory(job, name, applied); err != nil {
 		return err
 	}
 
-	session, err := client.NewSession(cfg.Hostname, cfg.Port, cfg.Username, cfg.PrivateKey)
+	session, err := client.NewSession(job.Hostname, job.Port, job.Username, job.PrivateKey)
 	if err != nil {
 		return err
 	}
 	defer session.Close()
 
-	if err := session.Scp(content, cfg.Abs); err != nil {
+	if err := session.Scp(content, job.Abs); err != nil {
 		return err
 	}
 
-	cfg.LatestIdx++
-	return workspace.UpdateConfig(&cfg)
+	job.LatestIdx++
+	return workspace.UpdateJob(&job)
 
 }
 
-func createHistory(cfg workspace.Cfg, name string, applied []byte) error {
-	session, err := client.NewSession(cfg.Hostname, cfg.Port, cfg.Username, cfg.PrivateKey)
+func createHistory(job workspace.Job, name string, applied []byte) error {
+	session, err := client.NewSession(job.Hostname, job.Port, job.Username, job.PrivateKey)
 	if err != nil {
 		return err
 	}
 	defer session.Close()
 
 	// Get Current File
-	current, err := session.Get(cfg.Abs)
+	current, err := session.Get(job.Abs)
 	if err != nil {
 		return err
 	}
@@ -100,5 +100,5 @@ func createHistory(cfg workspace.Cfg, name string, applied []byte) error {
 	before := bytes.NewBuffer(current)
 	after := bytes.NewBuffer(applied)
 
-	return workspace.CreateHistory(name, cfg.LatestIdx, before, after)
+	return workspace.CreateHistory(name, job.LatestIdx, before, after)
 }

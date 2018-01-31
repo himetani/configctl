@@ -45,9 +45,9 @@ func Init() error {
 	return nil
 }
 
-// CreateConfig create new config
-func CreateConfig(cfg *Cfg) error {
-	configs := GetConfigs()
+// CreateJob create new job
+func CreateJob(cfg *Job) error {
+	configs := GetJobs()
 
 	for _, c := range configs {
 		if c == cfg.Name {
@@ -79,32 +79,32 @@ func CreateConfig(cfg *Cfg) error {
 	return nil
 }
 
-// UpdateConfig is func to update config.json
-func UpdateConfig(cfg *Cfg) error {
-	cfgPath := filepath.Join(configCtlHome, "configs", cfg.Name)
-	file, err := os.Create(filepath.Join(cfgPath, "config.json"))
+// UpdateJob is func to update job.json
+func UpdateJob(job *Job) error {
+	jobPath := filepath.Join(configCtlHome, "jobs", job.Name)
+	file, err := os.Create(filepath.Join(jobPath, "job.json"))
 	if err != nil {
 		return err
 	}
 
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "\t")
-	return encoder.Encode(cfg)
+	return encoder.Encode(job)
 }
 
-// GetConfigs returns the slice of config
-func GetConfigs() (configs []string) {
-	configPaths, _ := ioutil.ReadDir(filepath.Join(configCtlHome, "configs"))
-	for _, c := range configPaths {
-		configs = append(configs, filepath.Base(c.Name()))
+// GetJobs returns the slice of Job
+func GetJobs() (jobs []string) {
+	jobPaths, _ := ioutil.ReadDir(filepath.Join(configCtlHome, "jobs"))
+	for _, c := range jobPaths {
+		jobs = append(jobs, filepath.Base(c.Name()))
 	}
 
-	return configs
+	return jobs
 }
 
-// GetConfig returns configuration of operation
-func GetConfig(name string, out interface{}) error {
-	file, err := os.Open(filepath.Join(configCtlHome, "configs", name, "config.json"))
+// GetJob returns job configuration of operation
+func GetJob(name string, out interface{}) error {
+	file, err := os.Open(filepath.Join(configCtlHome, "jobs", name, "job.json"))
 	if err != nil {
 		return fmt.Errorf("Can't find \"%s\" job. error: %s", name, err)
 	}
@@ -114,10 +114,10 @@ func GetConfig(name string, out interface{}) error {
 	return decoder.Decode(out)
 }
 
-// EditConfig opens vim to edit config.json of target job and returns error
-func EditConfig(name string) error {
-	cfgPath := filepath.Join(configCtlHome, "configs", name, "config.json")
-	cmd := exec.Command("vim", cfgPath)
+// EditJob opens vim to edit job.json of target job and returns error
+func EditJob(name string) error {
+	jobPath := filepath.Join(configCtlHome, "jobs", name, "job.json")
+	cmd := exec.Command("vim", jobPath)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	return cmd.Run()
@@ -125,19 +125,19 @@ func EditConfig(name string) error {
 
 // CreateTmp creates tmp dir and returns error
 func CreateTmp(name string) error {
-	tmpPath := filepath.Join(configCtlHome, "configs", name, "tmp")
+	tmpPath := filepath.Join(configCtlHome, "jobs", name, "tmp")
 	return os.Mkdir(tmpPath, 0777)
 }
 
 // DeleteTmp delete tmp dir and returns error
 func DeleteTmp(name string) error {
-	tmpPath := filepath.Join(configCtlHome, "configs", name, "tmp")
+	tmpPath := filepath.Join(configCtlHome, "jobs", name, "tmp")
 	return os.RemoveAll(tmpPath)
 }
 
 // PutTmp creates file in tmp dir and returns error
 func PutTmp(config, name string, reader io.Reader) error {
-	tmpPath := filepath.Join(configCtlHome, "configs", config, "tmp")
+	tmpPath := filepath.Join(configCtlHome, "jobs", config, "tmp")
 	file, err := os.Create(filepath.Join(tmpPath, name))
 	if err != nil {
 		return err
@@ -191,12 +191,12 @@ func CreateHistory(name string, idx int, before, after io.Reader) error {
 
 // ShowHistory is func to open job execution history
 func ShowHistory(name, idx string) error {
-	cfgPath := filepath.Join(configCtlHome, "configs", name)
-	if _, err := os.Stat(cfgPath); err != nil {
+	jobPath := filepath.Join(configCtlHome, "jobs", name)
+	if _, err := os.Stat(jobPath); err != nil {
 		return fmt.Errorf("Can't find \"%s\" job. error: %s", name, err)
 	}
 
-	histPath := filepath.Join(cfgPath, "history", idx)
+	histPath := filepath.Join(jobPath, "history", idx)
 	if _, err := os.Stat(histPath); err != nil {
 		return fmt.Errorf("Can't find \"%s\" job history. idx: %s, error: %s", name, idx, err)
 	}

@@ -62,7 +62,7 @@ func TestGetConfigs(t *testing.T) {
 		}
 
 		for i, test := range tests {
-			result := GetConfigs()
+			result := GetJobs()
 			if !reflect.DeepEqual(result, test.Result) {
 				t.Errorf("Test #%d %s: expected '%s', got '%s'", i, test.TestName, test.Result, result)
 			}
@@ -74,10 +74,10 @@ func TestGetConfigs(t *testing.T) {
 			TestName string
 			CfgName  string
 			Err      error
-			Result   Cfg
+			Result   Job
 		}
 
-		valid := Cfg{
+		valid := Job{
 			Name:       "valid",
 			Hostname:   "hostname",
 			Port:       "port",
@@ -88,12 +88,12 @@ func TestGetConfigs(t *testing.T) {
 
 		tests := []data{
 			{"Success", "valid", nil, valid},
-			{"Noop", "noop", fmt.Errorf("open %s: no such file or directory", filepath.Join(configCtlHome, "configs", "noop", "config.json")), Cfg{}},
+			{"Noop", "noop", fmt.Errorf("open %s: no such file or directory", filepath.Join(configCtlHome, "configs", "noop", "config.json")), Job{}},
 		}
 
 		for i, test := range tests {
-			var result Cfg
-			err := GetConfig(test.CfgName, &result)
+			var result Job
+			err := GetJob(test.CfgName, &result)
 			if err != nil && test.Err == nil {
 				t.Errorf("Unexpected error happend: %s\n", err)
 				continue
