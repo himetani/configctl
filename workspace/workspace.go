@@ -35,9 +35,9 @@ func Init() error {
 		}
 	}
 
-	configs := filepath.Join(configCtlHome, "configs")
-	if _, err := os.Stat(configs); os.IsNotExist(err) {
-		if err := os.Mkdir(configs, 0777); err != nil {
+	jobs := filepath.Join(configCtlHome, "jobs")
+	if _, err := os.Stat(jobs); os.IsNotExist(err) {
+		if err := os.Mkdir(jobs, 0777); err != nil {
 			return err
 		}
 	}
@@ -47,15 +47,15 @@ func Init() error {
 
 // CreateJob create new job
 func CreateJob(cfg *Job) error {
-	configs := GetJobs()
+	jobs := GetJobs()
 
-	for _, c := range configs {
+	for _, c := range jobs {
 		if c == cfg.Name {
 			return fmt.Errorf("[ERROR] %s is already created", cfg.Name)
 		}
 	}
 
-	cfgPath := filepath.Join(configCtlHome, "configs", cfg.Name)
+	cfgPath := filepath.Join(configCtlHome, "jobs", cfg.Name)
 	if err := os.Mkdir(cfgPath, 0777); err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func CreateJob(cfg *Job) error {
 		return err
 	}
 
-	file, err := os.Create(filepath.Join(cfgPath, "config.json"))
+	file, err := os.Create(filepath.Join(cfgPath, "job.json"))
 	if err != nil {
 		return err
 	}
@@ -136,8 +136,8 @@ func DeleteTmp(name string) error {
 }
 
 // PutTmp creates file in tmp dir and returns error
-func PutTmp(config, name string, reader io.Reader) error {
-	tmpPath := filepath.Join(configCtlHome, "jobs", config, "tmp")
+func PutTmp(job, name string, reader io.Reader) error {
+	tmpPath := filepath.Join(configCtlHome, "jobs", job, "tmp")
 	file, err := os.Create(filepath.Join(tmpPath, name))
 	if err != nil {
 		return err
@@ -151,7 +151,7 @@ func PutTmp(config, name string, reader io.Reader) error {
 
 // TmpDiff execute vimdiff of files in tmp dir
 func TmpDiff(name, before, after string) error {
-	tmpPath := filepath.Join(configCtlHome, "configs", name, "tmp")
+	tmpPath := filepath.Join(configCtlHome, "jobs", name, "tmp")
 	cmd := exec.Command("vimdiff", filepath.Join(tmpPath, before), filepath.Join(tmpPath, after))
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
@@ -160,7 +160,7 @@ func TmpDiff(name, before, after string) error {
 
 // CreateHistory is func to create hisotry
 func CreateHistory(name string, idx int, before, after io.Reader) error {
-	histPath := filepath.Join(configCtlHome, "configs", name, "history", strconv.Itoa(idx))
+	histPath := filepath.Join(configCtlHome, "jobs", name, "history", strconv.Itoa(idx))
 	if err := os.Mkdir(histPath, 0777); err != nil {
 		return err
 	}
