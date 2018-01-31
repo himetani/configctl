@@ -23,6 +23,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/himetani/configctl/client"
 	"github.com/himetani/configctl/workspace"
@@ -65,7 +66,13 @@ func connect(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	log.Printf("[INFO] Success to connect. hostname: %s, port: %s\n", job.Hostname, job.Port)
+	log.Printf("[INFO] AbsPath: %s\n", job.Abs)
+	log.Printf("[INFO] Content:\n")
+	fmt.Printf("### %s:%s\n", job.Hostname, job.Abs)
+	fmt.Printf(">>> Start of the Content\n")
 	fmt.Printf(string(bytes))
+	fmt.Printf(">>> End of the Content\n")
 
 	return nil
 }
