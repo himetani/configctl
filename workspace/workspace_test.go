@@ -48,7 +48,7 @@ func TestInit(t *testing.T) {
 	}
 }
 
-func TestGetConfigs(t *testing.T) {
+func TestGetJobs(t *testing.T) {
 	configCtlHome = filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "himetani", "configctl", "workspace", "testdata", "getJobs")
 
 	t.Run("GetJobs", func(t *testing.T) {
@@ -69,7 +69,7 @@ func TestGetConfigs(t *testing.T) {
 		}
 	})
 
-	t.Run("GetConfig", func(t *testing.T) {
+	t.Run("GetJob", func(t *testing.T) {
 		type data struct {
 			TestName string
 			CfgName  string
@@ -79,7 +79,7 @@ func TestGetConfigs(t *testing.T) {
 
 		valid := Job{
 			Name:       "valid",
-			Hostname:   "hostname",
+			Hosts:      []string{"hostname"},
 			Port:       "port",
 			Abs:        "abs",
 			Username:   "username",

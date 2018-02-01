@@ -69,14 +69,16 @@ func apply(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	session, err := client.NewSession(job.Hostname, job.Port, job.Username, job.PrivateKey)
-	if err != nil {
-		return err
-	}
-	defer session.Close()
+	for _, host := range job.Hosts {
+		session, err := client.NewSession(host, job.Port, job.Username, job.PrivateKey)
+		if err != nil {
+			return err
+		}
+		defer session.Close()
 
-	if err := session.Scp(content, job.Abs); err != nil {
-		return err
+		if err := session.Scp(content, job.Abs); err != nil {
+			return err
+		}
 	}
 
 	job.LatestIdx++
@@ -85,7 +87,7 @@ func apply(cmd *cobra.Command, args []string) error {
 }
 
 func createHistory(job workspace.Job, name string, applied []byte) error {
-	session, err := client.NewSession(job.Hostname, job.Port, job.Username, job.PrivateKey)
+	session, err := client.NewSession(job.Hosts[0], job.Port, job.Username, job.PrivateKey)
 	if err != nil {
 		return err
 	}

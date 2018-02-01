@@ -47,7 +47,7 @@ var addCmd = &cobra.Command{
 
 func init() {
 	addCmd.RunE = add
-	addCmd.Flags().StringVar(&hostname, "hostname", "", "hostname")
+	addCmd.Flags().StringVar(&hostname, "host", "", "hostname")
 	addCmd.Flags().StringVar(&port, "port", "2222", "port number")
 	addCmd.Flags().StringVar(&abs, "abs", "", "absolutely path")
 	addCmd.Flags().StringVar(&username, "username", "", "username")
@@ -66,7 +66,7 @@ func add(cmd *cobra.Command, args []string) error {
 
 	job := &workspace.Job{
 		Name:        name,
-		Hostname:    hostname,
+		Hosts:       []string{hostname},
 		Port:        port,
 		Abs:         abs,
 		Username:    username,

@@ -55,24 +55,26 @@ func connect(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	session, err := client.NewSession(job.Hostname, job.Port, job.Username, job.PrivateKey)
-	if err != nil {
-		return err
-	}
-	defer session.Close()
+	for _, host := range job.Hosts {
+		session, err := client.NewSession(host, job.Port, job.Username, job.PrivateKey)
+		if err != nil {
+			return err
+		}
+		defer session.Close()
 
-	bytes, err := session.Get(job.Abs)
-	if err != nil {
-		return err
-	}
+		bytes, err := session.Get(job.Abs)
+		if err != nil {
+			return err
+		}
 
-	log.Printf("[INFO] Success to connect. hostname: %s, port: %s\n", job.Hostname, job.Port)
-	log.Printf("[INFO] AbsPath: %s\n", job.Abs)
-	log.Printf("[INFO] Content:\n")
-	fmt.Printf("### %s:%s\n", job.Hostname, job.Abs)
-	fmt.Printf(">>> Start of the Content\n")
-	fmt.Printf(string(bytes))
-	fmt.Printf(">>> End of the Content\n")
+		log.Printf("[INFO] Success to connect. hostname: %s, port: %s\n", job.Hosts, job.Port)
+		log.Printf("[INFO] AbsPath: %s\n", job.Abs)
+		log.Printf("[INFO] Content:\n")
+		fmt.Printf("### %s:%s\n", job.Hosts, job.Abs)
+		fmt.Printf(">>> Start of the Content\n")
+		fmt.Printf(string(bytes))
+		fmt.Printf(">>> End of the Content\n")
+	}
 
 	return nil
 }

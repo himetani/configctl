@@ -54,7 +54,7 @@ func describe(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Printf("  Name         \t: %s\n", job.Name)
-	fmt.Printf("  Hostname     \t: %s\n", job.Hostname)
+	fmt.Printf("  Hostname     \t: %s\n", job.Hosts)
 	fmt.Printf("  Port         \t: %s\n", job.Port)
 	fmt.Printf("  AbsolutePath \t: %s\n", job.Abs)
 	fmt.Printf("  Username     \t: %s\n", job.Username)

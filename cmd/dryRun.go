@@ -55,7 +55,7 @@ func dryRun(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	session, err := client.NewSession(job.Hostname, job.Port, job.Username, job.PrivateKey)
+	session, err := client.NewSession(job.Hosts[0], job.Port, job.Username, job.PrivateKey)
 	if err != nil {
 		return err
 	}
