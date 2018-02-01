@@ -43,15 +43,15 @@ func TestInit(t *testing.T) {
 		t.Errorf("$CONFIGCTL_HOME dir is not created. %s\n", err)
 	}
 
-	if _, err := os.Stat(filepath.Join(configCtlHome, "configs")); os.IsNotExist(err) {
-		t.Errorf("$CONFIGCTL_HOME/configs is not created. %s\n", err)
+	if _, err := os.Stat(filepath.Join(configCtlHome, "jobs")); os.IsNotExist(err) {
+		t.Errorf("$CONFIGCTL_HOME/jobs is not created. %s\n", err)
 	}
 }
 
 func TestGetConfigs(t *testing.T) {
-	configCtlHome = filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "himetani", "configctl", "workspace", "testdata", "getConfigs")
+	configCtlHome = filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "himetani", "configctl", "workspace", "testdata", "getJobs")
 
-	t.Run("GetConfigs", func(t *testing.T) {
+	t.Run("GetJobs", func(t *testing.T) {
 		type data struct {
 			TestName string
 			Result   []string
@@ -88,7 +88,7 @@ func TestGetConfigs(t *testing.T) {
 
 		tests := []data{
 			{"Success", "valid", nil, valid},
-			{"Noop", "noop", fmt.Errorf("open %s: no such file or directory", filepath.Join(configCtlHome, "configs", "noop", "config.json")), Job{}},
+			{"Noop", "noop", fmt.Errorf("Can't find \"noop\" job. error: open %s: no such file or directory", filepath.Join(configCtlHome, "jobs", "noop", "job.json")), Job{}},
 		}
 
 		for i, test := range tests {
@@ -129,11 +129,11 @@ func TestCreateHistory(t *testing.T) {
 	}
 	tests := []data{
 		{"Success", 1, nil},
-		{"Conflict dir", 0, fmt.Errorf("mkdir /Users/takafumi.tsukamoto/dev/src/github.com/himetani/configctl/workspace/testdata/createHistory/configs/valid/history/0: file exists")},
+		{"Conflict dir", 0, fmt.Errorf("mkdir /Users/takafumi.tsukamoto/dev/src/github.com/himetani/configctl/workspace/testdata/createHistory/jobs/valid/history/0: file exists")},
 	}
 
 	func() {
-		os.MkdirAll(filepath.Join(configCtlHome, "configs", cfgName, "history", "0"), 0777)
+		os.MkdirAll(filepath.Join(configCtlHome, "jobs", cfgName, "history", "0"), 0777)
 	}()
 
 	for i, test := range tests {
@@ -161,7 +161,7 @@ func TestCreateHistory(t *testing.T) {
 	}
 
 	func() {
-		os.RemoveAll(filepath.Join(configCtlHome, "configs", cfgName, "history"))
+		os.RemoveAll(filepath.Join(configCtlHome, "jobs", cfgName, "history"))
 	}()
 
 }
