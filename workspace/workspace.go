@@ -75,7 +75,7 @@ func CreateJob(cfg *Job) error {
 		return nil
 	}
 
-	fmt.Printf("[INFO] %s is added. Confituration path is %s\n", cfg.Name, cfgPath)
+	fmt.Printf("[INFO] %s was created. Confituration path is %s\n", cfg.Name, filepath.Join(cfgPath, "job.json"))
 	return nil
 }
 
