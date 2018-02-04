@@ -70,8 +70,6 @@ func create(cmd *cobra.Command, args []string) error {
 
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Printf("Job name: %s \n", name)
-
 	if hostStr == "" {
 		for {
 			fmt.Println("Multiple hosts are separeted by colon. (ex) host1.co.jp:host2.co.jp")
@@ -81,33 +79,34 @@ func create(cmd *cobra.Command, args []string) error {
 			if hostStr == "" {
 				continue
 			}
-
-			hosts = strings.Split(hostStr, ":")
-			fmt.Printf("Hosts = %v \n", hosts)
 			break
 		}
 	}
+	hosts = strings.Split(hostStr, ":")
 
-	if port == "" {
-		for {
+	for {
+		if port == "" {
 			fmt.Print("Port (default=22): ")
 			port, _ = reader.ReadString('\n')
 			port = strings.Replace(port, "\n", "", -1)
-			if port == "" {
-				port = "22"
-			}
-			portInt, err := strconv.Atoi(port)
-			if err != nil {
-				fmt.Printf("Invalid Port number. Port = %s \n", port)
-				continue
-			}
+		}
 
-			if (1024 < portInt && portInt < 65535) || portInt == 22 {
-				fmt.Printf("Port = %s \n", port)
-				break
-			} else {
-				fmt.Printf("Invalid Port number. Port = %s \n", port)
-			}
+		if port == "" {
+			port = "22"
+		}
+
+		portInt, err := strconv.Atoi(port)
+		if err != nil {
+			fmt.Printf("Invalid Port number. Port = %s \n", port)
+			port = ""
+			continue
+		}
+
+		if (1024 < portInt && portInt < 65535) || portInt == 22 {
+			break
+		} else {
+			fmt.Printf("Invalid Port number. Port = %s \n", port)
+			port = ""
 		}
 	}
 
@@ -119,8 +118,6 @@ func create(cmd *cobra.Command, args []string) error {
 			if abs == "" {
 				continue
 			}
-
-			fmt.Printf("Abs path = %s \n", abs)
 			break
 		}
 	}
@@ -133,24 +130,23 @@ func create(cmd *cobra.Command, args []string) error {
 			if username == "" {
 				continue
 			}
-			fmt.Printf("username = %s \n", username)
 			break
 		}
 	}
 
-	if privateKey == "" {
-		for {
+	for {
+		if privateKey == "" {
 			fmt.Print("privateKey : ")
 			privateKey, _ = reader.ReadString('\n')
 			privateKey = strings.Replace(privateKey, "\n", "", -1)
+		}
 
-			if _, err := os.Stat(privateKey); os.IsNotExist(err) {
-				fmt.Printf("Invalid privateKey path. %s\n", err)
-				continue
-			} else {
-				fmt.Printf("privateKey = %s \n", privateKey)
-				break
-			}
+		if _, err := os.Stat(privateKey); os.IsNotExist(err) {
+			fmt.Printf("Invalid privateKey path. %s\n", err)
+			privateKey = ""
+			continue
+		} else {
+			break
 		}
 	}
 
