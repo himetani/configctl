@@ -102,6 +102,12 @@ func GetJobs() (jobs []string) {
 	return jobs
 }
 
+// RemoveJob remove job and returns error
+func RemoveJob(name string) error {
+	jobPath := filepath.Join(configCtlHome, "jobs", name)
+	return os.RemoveAll(jobPath)
+}
+
 // GetJob returns job configuration of operation
 func GetJob(name string, out interface{}) error {
 	file, err := os.Open(filepath.Join(configCtlHome, "jobs", name, "job.json"))
