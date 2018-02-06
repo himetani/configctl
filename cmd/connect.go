@@ -67,7 +67,7 @@ func connect(cmd *cobra.Command, args []string) error {
 			return err
 		}
 
-		log.Printf("[INFO] Success to connect. hostname: %s, port: %s\n", job.Hosts, job.Port)
+		log.Printf("[INFO] Success to connect. hostname: %s, port: %s\n", host, job.Port)
 		log.Printf("[INFO] AbsPath: %s\n", job.Abs)
 		log.Printf("[INFO] Content:\n")
 		fmt.Printf("### %s:%s\n", job.Hosts, job.Abs)
